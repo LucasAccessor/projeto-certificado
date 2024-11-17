@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revogar Certificado</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            margin: 40px auto;
+            padding: 20px;
+            max-width: 600px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #4CAF50;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Revogar Certificado</h1>
+    </header>
+
+    <div class="container">
+        <form id="formRevogar">
+            <label for="revogarId">ID do Certificado:</label>
+            <input type="number" id="revogarId" required>
+            <button type="submit">Revogar</button>
+        </form>
+        <p id="status"></p>
+        <a href="index.html" class="back-link">Voltar à Página Inicial</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <script>
+        const contractAddress = "0xe96B86D69B870EF336DEa1df5b301AD20D415451";
+        const contractABI = [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "nomeAluno",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "curso",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "dataEmissao",
+          "type": "string"
+        }
+      ],
+      "name": "CertificadoRegistrado",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "CertificadoRevogado",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "certificados",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "nomeAluno",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "curso",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "dataEmissao",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "valido",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_nomeAluno",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_curso",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_dataEmissao",
+          "type": "string"
+        }
+      ],
+      "name": "registrarCertificado",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "consultarCertificado",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "nomeAluno",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "curso",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "dataEmissao",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "valido",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "revogarCertificado",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ];
+
+        let web3;
+        let contract;
+
+        async function init() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                await ethereum.request({ method: 'eth_requestAccounts' });
+                contract = new web3.eth.Contract(contractABI, contractAddress);
+            } else {
+                alert("Metamask não detectado!");
+            }
+        }
+
+        init();
+
+        document.getElementById("formRevogar").onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById("revogarId").value;
+
+            try {
+                const accounts = await web3.eth.getAccounts();
+                await contract.methods.revogarCertificado(id).send({ from: accounts[0] });
+                document.getElementById("status").innerText = "Certificado revogado com sucesso!";
+            } catch (error) {
+                document.getElementById("status").innerText = "Erro ao revogar: " + error.message;
+            }
+        };
+    </script>
+</body>
+</html>
